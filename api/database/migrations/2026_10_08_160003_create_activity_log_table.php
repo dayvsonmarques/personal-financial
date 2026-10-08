@@ -17,6 +17,8 @@ return new class extends Migration
             $table->nullableMorphs('causer', 'causer');
             $table->json('attribute_changes')->nullable();
             $table->json('properties')->nullable();
+            $table->foreignId('organization_id')->nullable()->index()->constrained()->cascadeOnDelete();
+            $table->string('ip', 45)->nullable();
             $table->timestamps();
         });
     }
