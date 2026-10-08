@@ -160,6 +160,7 @@
   "The :attribute must be at least :length characters and contain at least one uppercase character.": "O campo :attribute deve ter pelo menos :length e conter pelo menos um caractere maiúsculo.",
   "The :attribute must be at least :length characters.": "O campo :attribute deve ter pelo menos :length caracteres.",
   "The given data was invalid.": "Os dados fornecidos são inválidos.",
+  "The provided password does not match your current password.": "A senha atual informada está incorreta.",
   "The team's name and owner information.": "O nome do time e informações do proprietário.",
   "This action is unauthorized.": "Esta ação não é autorizada.",
   "This is a secure area of the application. Please confirm your password before continuing.": "Essa é uma área segura da aplicação. Por favor confirme sua senha antes de continuar.",
