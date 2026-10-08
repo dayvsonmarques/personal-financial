@@ -42,8 +42,11 @@ lint:
 	$(WEB) lint
 	$(WEB) typecheck
 
-e2e: ## Testes de ponta a ponta (requer make up)
-	cd web && pnpm exec playwright test
+PLAYWRIGHT_IMAGE = mcr.microsoft.com/playwright:v1.64.0-noble
+
+e2e: ## Testes de ponta a ponta (requer make up). Ex.: make e2e p="--project=chromium"
+	docker run --rm --network host --ipc=host -u $$(id -u):$$(id -g) -e HOME=/tmp \
+		-v $(CURDIR)/web:/app -w /app $(PLAYWRIGHT_IMAGE) ./node_modules/.bin/playwright test $(p)
 
 logs:
 	$(DC) logs -f --tail=100
