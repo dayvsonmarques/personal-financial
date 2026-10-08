@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: api
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: financeiro_test
+          POSTGRES_USER: financeiro
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U financeiro"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      DB_HOST: 127.0.0.1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, intl, bcmath, zip
+          coverage: none
+
+      - name: Cache do Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ hashFiles('api/composer.lock') }}
+
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: cp .env.example .env && php artisan key:generate
+      - run: vendor/bin/pint --test
+      - run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+      - run: php artisan test
+
+  web:
+    name: web
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: web/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
