@@ -34,4 +34,11 @@ export default defineNuxtConfig({
       stylistic: true,
     },
   },
+
+  // SPA estática: os ícones usados vão no bundle; sem consulta a CDN nem a /api (que é do Laravel).
+  icon: {
+    provider: 'none',
+    // Inclui .ts: há ícones definidos em composables (ex.: useNavigation).
+    clientBundle: { scan: { globInclude: ['**/*.{vue,ts,tsx}'] } },
+  },
 })
