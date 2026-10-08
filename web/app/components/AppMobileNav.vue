@@ -1,10 +1,5 @@
 <script setup lang="ts">
-const { mobile } = useNavigation()
-const route = useRoute()
-
-function isActive(to: string) {
-  return to === '/' ? route.path === '/' : route.path.startsWith(to)
-}
+const { mobile, isActive } = useNavigation()
 </script>
 
 <template>

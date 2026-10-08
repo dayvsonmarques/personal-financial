@@ -21,12 +21,16 @@ const ITEMS: NavItem[] = [
 ]
 
 export function useNavigation() {
+  const route = useRoute()
   const items = ITEMS.filter(item => item.available)
 
+  // Subpáginas (ex.: /configuracoes/perfil) não são rotas filhas, então o ativo é calculado pelo prefixo.
+  const isActive = (to: string) => (to === '/' ? route.path === '/' : route.path.startsWith(to))
+
   const sidebar = computed<NavigationMenuItem[]>(() =>
-    items.map(({ label, icon, to }) => ({ label, icon, to, exact: to === '/' })))
+    items.map(({ label, icon, to }) => ({ label, icon, to, active: isActive(to) })))
 
   const mobile = computed(() => items.filter(item => item.mobile))
 
-  return { sidebar, mobile }
+  return { sidebar, mobile, isActive }
 }
