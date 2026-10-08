@@ -13,7 +13,7 @@ it('registra criação, edição e exclusão com organização, autor e IP', fun
     $widget->update(['name' => 'depois']);
     $widget->delete();
 
-    $logs = Activity::query()->orderBy('id')->get();
+    $logs = Activity::query()->where('subject_type', AuditedWidget::class)->orderBy('id')->get();
 
     expect($logs->pluck('event')->all())->toBe(['created', 'updated', 'deleted'])
         ->and($logs->pluck('organization_id')->unique()->all())->toBe([$user->current_organization_id])
@@ -31,7 +31,7 @@ it('registra apenas atributos alterados e ignora updated_at', function () {
     $widget = AuditedWidget::create(['name' => 'a']);
     $widget->update(['name' => 'b']);
 
-    $changes = Activity::query()->where('event', 'updated')->sole()->attribute_changes;
+    $changes = Activity::query()->where('subject_type', AuditedWidget::class)->where('event', 'updated')->sole()->attribute_changes;
 
     expect(array_keys($changes['attributes']))->toBe(['name']);
 });
@@ -41,5 +41,5 @@ it('nunca registra campos sensíveis', function () {
 
     activity()->withProperties(['password' => 'segredo', 'token' => 'x', 'ok' => 1])->log('teste');
 
-    expect(Activity::query()->sole()->properties->all())->toBe(['ok' => 1]);
+    expect(Activity::query()->where('description', 'teste')->sole()->properties->all())->toBe(['ok' => 1]);
 });
