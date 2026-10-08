@@ -511,7 +511,7 @@ As regras de negócio ficam em Actions/Services testáveis (ex.: `AssignTransact
 
 ### 10.3 Deploy
 
-- SPA e API na mesma origem atrás de um único Nginx (D21); configurar `SANCTUM_STATEFUL_DOMAINS` e `SESSION_DOMAIN` com o domínio do app
+- SPA e API na mesma origem atrás de um único Nginx (D21); configurar `SANCTUM_STATEFUL_DOMAINS` com o domínio do app e deixar `SESSION_DOMAIN` vazio (cookie restrito ao host: com a mesma origem não há subdomínio a cobrir, e o Safari/WebKit rejeita `Domain=localhost` em dev)
 - GitHub Actions rodando lint e testes a cada push e pull request; deploy automatizado da branch `main` (D17)
 - Monitor externo de uptime da API e do frontend (D18)
 - Infraestrutura conforme D14
