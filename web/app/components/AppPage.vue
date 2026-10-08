@@ -15,6 +15,10 @@ defineProps<{ title: string }>()
         </template>
         <template #right>
           <slot name="actions" />
+          <!-- No mobile a sidebar some; o menu do usuário (perfil, sair) fica aqui. -->
+          <div class="lg:hidden">
+            <AppUserMenu collapsed />
+          </div>
         </template>
       </UDashboardNavbar>
     </template>
