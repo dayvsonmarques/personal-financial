@@ -24,3 +24,9 @@ Em especificação. O código ainda não foi iniciado.
 api/   # backend Laravel
 web/   # frontend Nuxt
 ```
+
+## Créditos
+
+Desenvolvido com assistência do Claude Code.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
