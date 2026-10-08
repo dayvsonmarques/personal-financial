@@ -8,7 +8,7 @@ const auth = useAuthStore()
 
 const state = reactive({ email: '' })
 const form = useTemplateRef('form')
-const { error, run } = useFormSubmit(form)
+const { error, run } = useFormSubmit(form, state)
 const sent = ref<string | null>(null)
 
 function validate(s: typeof state): FormError[] {

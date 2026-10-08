@@ -9,7 +9,7 @@ const route = useRoute()
 
 const state = reactive({ email: '', password: '', remember: false })
 const form = useTemplateRef('form')
-const { error, run } = useFormSubmit(form)
+const { error, run } = useFormSubmit(form, state)
 
 function validate(s: typeof state): FormError[] {
   return firstPerField([

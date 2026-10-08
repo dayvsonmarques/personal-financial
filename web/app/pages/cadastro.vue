@@ -8,7 +8,7 @@ const auth = useAuthStore()
 
 const state = reactive({ name: '', email: '', password: '', password_confirmation: '' })
 const form = useTemplateRef('form')
-const { error, run } = useFormSubmit(form)
+const { error, run } = useFormSubmit(form, state)
 
 function validate(s: typeof state): FormError[] {
   return firstPerField([

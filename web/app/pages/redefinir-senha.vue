@@ -15,7 +15,7 @@ const state = reactive({
   password_confirmation: '',
 })
 const form = useTemplateRef('form')
-const { error, run } = useFormSubmit(form)
+const { error, run } = useFormSubmit(form, state)
 
 function validate(s: typeof state): FormError[] {
   return firstPerField([
