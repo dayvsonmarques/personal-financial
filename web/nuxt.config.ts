@@ -26,6 +26,8 @@ export default defineNuxtConfig({
     server: {
       // Em dev o navegador acessa via Nginx na porta 8080 (D21).
       ws: { clientPort: 8080 },
+      // Compila as telas ao subir o dev server, não no primeiro acesso (evita timeouts no E2E).
+      warmup: { clientFiles: ['./app/pages/**/*.vue', './app/layouts/*.vue'] },
     },
   },
 
