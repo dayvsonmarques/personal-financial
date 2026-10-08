@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
@@ -67,4 +68,17 @@ it('encerra as outras sessões ao trocar a senha', function () {
     ])->assertOk();
 
     expect(DB::table('sessions')->where('id', 'sessao-de-outro-dispositivo')->exists())->toBeFalse();
+});
+
+it('mantém a sessão atual válida ao trocar a senha', function () {
+    // As rotas do Fortify não passam pelo AuthenticateSession do Sanctum; sem atualizar
+    // o hash da sessão, a próxima chamada à API derrubaria o próprio usuário.
+    $this->putJson('/api/v1/auth/user/password', [
+        'current_password' => 'senha-atual-123',
+        'password' => 'nova-senha-123',
+        'password_confirmation' => 'nova-senha-123',
+    ])->assertOk()->assertSessionHas(
+        'password_hash_web',
+        Auth::guard('web')->hashPasswordForCookie($this->user->fresh()->password),
+    );
 });

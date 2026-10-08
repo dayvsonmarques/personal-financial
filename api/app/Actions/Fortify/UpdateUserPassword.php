@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -32,7 +33,22 @@ class UpdateUserPassword implements UpdatesUserPasswords
             'password' => $input['password'],
         ])->save();
 
+        $this->keepCurrentSession($user);
         $this->endOtherSessions($user);
+    }
+
+    /**
+     * As rotas do Fortify não passam pelo AuthenticateSession do Sanctum, que guarda o
+     * hash da senha na sessão. Sem atualizá-lo aqui, a próxima chamada à API veria o hash
+     * antigo e encerraria também a sessão de quem acabou de trocar a senha.
+     */
+    private function keepCurrentSession(User $user): void
+    {
+        if (! request()->hasSession()) {
+            return;
+        }
+
+        request()->session()->put('password_hash_web', Auth::guard('web')->hashPasswordForCookie($user->getAuthPassword()));
     }
 
     /**
