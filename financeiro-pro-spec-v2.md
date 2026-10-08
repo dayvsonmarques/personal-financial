@@ -35,6 +35,8 @@ Decisões que condicionam escopo, modelo de dados e regras. Qualquer mudança aq
 | D18 | **Monitoramento com Sentry** (erros da API, dos jobs e do frontend) e monitor externo de uptime. O DSN vem de variável de ambiente; sem ele, a aplicação funciona normalmente e apenas não envia eventos. | decidido |
 | D19 | **Uma única data por lançamento.** Em lançamentos em conta, `date` é ao mesmo tempo a competência e o vencimento (ex.: a conta de luz de setembro que vence em 10/10 conta em outubro). Separar as datas complicaria todos os formulários sem ganho relevante para uso pessoal. | decidido |
 | D20 | **Testes de ponta a ponta com Playwright**, restritos a 3 fluxos críticos: (1) cadastro, verificação de e-mail e login; (2) compra parcelada no cartão até o pagamento da fatura; (3) criação de recorrência até o pagamento de uma ocorrência. O restante fica coberto por testes de API (Pest) e de componentes (Vitest). Rodam no GitHub Actions contra o ambiente Docker. | decidido |
+| D21 | **SPA e API na mesma origem.** Um Nginx serve `/api/*` e `/sanctum/*` para o Laravel e o restante para a SPA, em desenvolvimento e em produção. Elimina CORS e a configuração de cookies entre subdomínios. | decidido |
+| D22 | **Autenticação com Laravel Fortify (modo headless) + Sanctum.** O Fortify fornece cadastro, login, verificação de e-mail, recuperação de senha e troca de senha já testados, e terá 2FA pronto para a Fase 2. Versões fixadas no início: Laravel 13, PHP 8.4, Nuxt 4.6, Nuxt UI 4. | decidido |
 
 ---
 
@@ -477,9 +479,9 @@ Via `spatie/laravel-activitylog`: id, organization_id, causer_id, subject_type, 
 
 ### 10.1 Backend
 
-- Laravel (fixar a versão estável vigente no início do projeto, 12.x ou superior), PHP 8.4+
+- Laravel 13, PHP 8.4 (D22)
 - PostgreSQL 16+
-- Laravel Sanctum no modo SPA (cookie de sessão + CSRF)
+- Laravel Sanctum no modo SPA (cookie de sessão + CSRF) e Laravel Fortify headless (D22)
 - `spatie/laravel-activitylog`
 - Filas com driver `database` no MVP; Redis quando houver necessidade medida (cache do dashboard, volume de jobs)
 - Mail para verificação de e-mail, recuperação de senha e exclusão de conta
@@ -500,7 +502,7 @@ As regras de negócio ficam em Actions/Services testáveis (ex.: `AssignTransact
 
 ### 10.2 Frontend
 
-- Nuxt 4 com `ssr: false`, TypeScript, Pinia
+- Nuxt 4.6 com `ssr: false`, TypeScript, Pinia
 - Nuxt UI
 - ECharts (`vue-echarts`)
 - Sentry (`@sentry/nuxt`) para erros do frontend (D18)
@@ -509,7 +511,7 @@ As regras de negócio ficam em Actions/Services testáveis (ex.: `AssignTransact
 
 ### 10.3 Deploy
 
-- SPA e API sob o mesmo domínio raiz (ex.: `app.dominio.com` e `api.dominio.com`), exigência do cookie do Sanctum; configurar `SANCTUM_STATEFUL_DOMAINS` e `SESSION_DOMAIN`
+- SPA e API na mesma origem atrás de um único Nginx (D21); configurar `SANCTUM_STATEFUL_DOMAINS` com o domínio do app e deixar `SESSION_DOMAIN` vazio (cookie restrito ao host: com a mesma origem não há subdomínio a cobrir, e o Safari/WebKit rejeita `Domain=localhost` em dev)
 - GitHub Actions rodando lint e testes a cada push e pull request; deploy automatizado da branch `main` (D17)
 - Monitor externo de uptime da API e do frontend (D18)
 - Infraestrutura conforme D14
